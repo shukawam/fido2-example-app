@@ -1,0 +1,15 @@
+version: '3.3'
+
+services:
+  # Front
+  front:
+    build: ./front
+    container_name: front
+    ports:
+      - 4200:80
+  # Server
+  fido2:
+    build: ./server
+    container_name: rp
+    ports: 
+      - 8081:8081

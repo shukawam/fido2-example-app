@@ -1,0 +1,31 @@
+<form class="form-signup text-center">
+  <h1 class="h3 mb-2 font-weight-normal">FIDO2 Sign up.</h1>
+  <p>{{ message }}</p>
+  <label for="inputEmail" class="sr-only">Email address</label>
+  <input
+    type="email"
+    id="inputEmail"
+    class="form-control"
+    placeholder="Email address"
+    [(ngModel)]="user.email"
+    name="email"
+    required
+    autocomplete="off"
+    autofocus
+  />
+  <button
+    type="button"
+    class="btn btn-lg btn-outline-primary btn-block mt-3"
+    (click)="signUp()"
+  >
+    Sign up
+  </button>
+  <button
+    *ngIf="isSuccess"
+    type="button"
+    class="btn btn-lg btn-outline-secondary btn-block mt-3"
+    (click)="goSignIn()"
+  >
+    Sign in
+  </button>
+</form>

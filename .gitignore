@@ -1,0 +1,23 @@
+# Node
+node_modules/
+
+# Helidon
+.helidon
+ObjectStore/
+PutObjectStoreDirHere/
+
+# Maven
+target/
+
+# Idea
+.idea/
+*.iml
+
+# VSCode
+.settings/
+.classpath
+.project
+bin/
+
+# Simple e2e
+test.http
