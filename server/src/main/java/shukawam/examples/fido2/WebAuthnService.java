@@ -139,27 +139,22 @@ public class WebAuthnService {
                 registrationData.getAttestationObject().getAuthenticatorData().getSignCount()
         );
         var credentialId = registrationData.getAttestationObject().getAuthenticatorData().getAttestedCredentialData().getCredentialId();
-        // store authenticator
-        persistAuthenticator(credentialId, authenticator);
+        LOGGER.info("credentialId");
+        LOGGER.info(Base64UrlUtil.encodeToString(credentialId));
         // store credential to user table
         persistCredential(email, credentialId);
+        // store authenticator
+        persistAuthenticator(credentialId, authenticator);
         return true;
     }
 
     @Transactional(Transactional.TxType.REQUIRED)
     public PublicKeyCredentialRequestOptions requestOptions(String email) {
-        var users = entityManager.createNamedQuery("getUserByEmail", Users.class)
-                .setParameter("email", email)
-                .getResultList();
-        if (users.isEmpty()) {
-            throw new BadRequestException("user is NOT found.");
-        }
+        var user = entityManager.find(Users.class, email);
         var challenge = new DefaultChallenge();
-        var user = users.get(0);
         user.challenge = challenge.getValue();
-        entityManager.persist(user);
         var allowCredentials = entityManager.createNamedQuery("getCredentialById", Credential.class)
-                .setParameter("credentialId", users.get(0).credentialId)
+                .setParameter("credentialId", user.credentialId)
                 .getResultStream()
                 .map(credential -> new PublicKeyCredentialDescriptor(
                         PublicKeyCredentialType.PUBLIC_KEY,
@@ -230,13 +225,13 @@ public class WebAuthnService {
     }
 
     private void persistCredential(String email, byte[] credentialId) {
-        LOGGER.info("WebAuthnService.persistCredential");
-        var user = entityManager.createNamedQuery("getUserByEmail", Users.class)
-                .setParameter("email", email)
-                .getResultList()
-                .get(0);
+        LOGGER.info("start: WebAuthnService.persistCredential");
+        var user = entityManager.find(Users.class, email);
         user.credentialId = Base64UrlUtil.encodeToString(credentialId);
-        entityManager.persist(user);
+        LOGGER.info("user.credentialId");
+        LOGGER.info(user.credentialId);
+//        entityManager.persist(user);
+        LOGGER.info("end: WebAuthnService.persistCredential");
     }
 
     private AuthenticatorImpl getAuthenticator(byte[] credentialId) {
