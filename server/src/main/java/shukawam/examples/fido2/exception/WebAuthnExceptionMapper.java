@@ -9,10 +9,8 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class WebAuthnExceptionMapper implements ExceptionMapper<WebAuthnException> {
 
-    private static final int BAD_REQUEST = 400;
-
     @Override
     public Response toResponse(WebAuthnException e) {
-        return Response.status(BAD_REQUEST, e.getMessage()).build();
+        return Response.status(Response.Status.BAD_REQUEST).build();
     }
 }
