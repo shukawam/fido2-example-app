@@ -1,6 +1,5 @@
 package shukawam.examples.fido2.entity;
 
-
 import javax.persistence.*;
 
 @Entity(name = "Credential")

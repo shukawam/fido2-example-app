@@ -7,13 +7,13 @@ server:
 javax:
   sql:
     DataSource:
-      h2DataSource:
+      H2DataSource:
         dataSourceClassName: org.h2.jdbcx.JdbcDataSource
         dataSource:
-          url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1
+          url: jdbc:h2:mem:test;INIT=RUNSCRIPT FROM 'classpath:create-table.ddl'
           user: sa
           password:
-      atpDataSource:
+      AtpDataSource:
         dataSourceClassName: oracle.jdbc.pool.OracleDataSource
         dataSource:
           url: jdbc:oracle:thin:@sandbox_high?TNS_ADMIN=C:/Work/05_oci/wallets/Wallet_SANDBOX

@@ -4,8 +4,9 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
                                  http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
-  <persistence-unit name="test" transaction-type="JTA">
-    <jta-data-source>atpDataSource</jta-data-source>
+  <persistence-unit name="AtpDS" transaction-type="JTA">
+    <description>A persistence unit for the helidon MP example - for Autonomous Database</description>
+    <jta-data-source>AtpDataSource</jta-data-source>
     <class>shukawam.examples.fido2.entity.Credential</class>
     <class>shukawam.examples.fido2.entity.Users</class>
     <properties>
@@ -15,6 +16,23 @@
       <property name="eclipselink.logging.parameters" value="true"/>
       <property name="eclipselink.target-server" value="io.helidon.integrations.cdi.eclipselink.CDISEPlatform"/>
       <property name="eclipselink.weaving" value="false"/>
+    </properties>
+  </persistence-unit>
+
+  <persistence-unit name="H2DS" transaction-type="JTA">
+    <description>A persistence unit for the helidon MP example - for H2</description>
+    <jta-data-source>H2DataSource</jta-data-source>
+    <class>shukawam.examples.fido2.entity.Credential</class>
+    <class>shukawam.examples.fido2.entity.Users</class>
+    <properties>
+      <property name="eclipselink.deploy-on-startup" value="true"/>
+      <property name="eclipselink.jdbc.native-sql" value="true"/>
+      <property name="eclipselink.logging.logger" value="JavaLogger"/>
+      <property name="eclipselink.logging.parameters" value="true"/>
+      <property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.H2Platform"/>
+      <property name="eclipselink.target-server" value="io.helidon.integrations.cdi.eclipselink.CDISEPlatform"/>
+      <property name="eclipselink.weaving" value="false"/>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
     </properties>
   </persistence-unit>
 </persistence>
