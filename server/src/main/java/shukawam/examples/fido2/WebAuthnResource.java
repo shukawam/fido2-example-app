@@ -2,6 +2,8 @@ package shukawam.examples.fido2;
 
 import com.webauthn4j.util.Base64UrlUtil;
 import shukawam.examples.fido2.dto.*;
+import shukawam.examples.fido2.filter.Logged;
+import shukawam.examples.fido2.interceptor.Debug;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -10,13 +12,17 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Path("webauthn")
+@Logged
+@Debug
 public class WebAuthnResource {
     private final WebAuthnService webAuthnService;
-    private static final Logger LOGGER = Logger.getLogger(WebAuthnResource.class.getName());
+
+    private final Logger logger;
 
     @Inject
-    public WebAuthnResource(WebAuthnService webAuthnService) {
+    public WebAuthnResource(WebAuthnService webAuthnService, Logger logger) {
         this.webAuthnService = webAuthnService;
+        this.logger = logger;
     }
 
     @GET
@@ -45,7 +51,6 @@ public class WebAuthnResource {
     @Path("attestation/result")
     @Consumes(MediaType.APPLICATION_JSON)
     public AttestationResult attestationResult(AttestationRequest attestationRequest) {
-        LOGGER.info("WebAuthnResource.attestation()");
         var isSuccess = false;
         isSuccess = webAuthnService.creationFinish(attestationRequest.email,
                 Base64UrlUtil.decode(attestationRequest.clientDataJSON),
@@ -58,7 +63,6 @@ public class WebAuthnResource {
     @Path("assertion/options/{email}")
     @Produces(MediaType.APPLICATION_JSON)
     public AssertionServerOptions assertionOptions(@PathParam("email") String email) {
-        LOGGER.info("WebAuthnResource.assertionOptions()");
         var publicKeyCredentialRequestOptions = webAuthnService.requestOptions(email);
         var allowCredential = publicKeyCredentialRequestOptions.getAllowCredentials()
                 .stream()
@@ -81,7 +85,6 @@ public class WebAuthnResource {
     @Path("assertion/result")
     @Consumes(MediaType.APPLICATION_JSON)
     public AssertionResult assertionResult(AssertionRequest assertionRequest) {
-        LOGGER.info("WebAuthnResource.assertionResult()");
         var isSuccess = false;
         isSuccess = webAuthnService.assertionFinish(
                 Base64UrlUtil.decode(assertionRequest.credentialId),

@@ -1,6 +1,5 @@
 package shukawam.examples.fido2;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.webauthn4j.WebAuthnManager;
 import com.webauthn4j.authenticator.Authenticator;
 import com.webauthn4j.authenticator.AuthenticatorImpl;
@@ -8,7 +7,6 @@ import com.webauthn4j.converter.AttestedCredentialDataConverter;
 import com.webauthn4j.converter.exception.DataConversionException;
 import com.webauthn4j.converter.util.ObjectConverter;
 import com.webauthn4j.data.*;
-import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
 import com.webauthn4j.data.attestation.statement.COSEAlgorithmIdentifier;
 import com.webauthn4j.data.client.Origin;
 import com.webauthn4j.data.client.challenge.Challenge;
@@ -16,12 +14,15 @@ import com.webauthn4j.data.client.challenge.DefaultChallenge;
 import com.webauthn4j.server.ServerProperty;
 import com.webauthn4j.util.Base64UrlUtil;
 import com.webauthn4j.util.UUIDUtil;
+import com.webauthn4j.util.exception.WebAuthnException;
 import com.webauthn4j.validator.exception.ValidationException;
 import shukawam.examples.fido2.dto.AttestationStatementEnvelope;
 import shukawam.examples.fido2.entity.Credential;
 import shukawam.examples.fido2.entity.Users;
+import shukawam.examples.fido2.interceptor.Debug;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
@@ -36,41 +37,35 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Dependent
+@Debug
 public class WebAuthnService {
-
+    private final Logger logger;
     @PersistenceContext(unitName = "test")
     private EntityManager entityManager;
-
-    private static Logger LOGGER = Logger.getLogger(WebAuthnService.class.getName());
-
     private static PublicKeyCredentialRpEntity rp = new PublicKeyCredentialRpEntity("localhost", "OCHaCafe fido");
+
+    @Inject
+    public WebAuthnService(Logger logger) {
+        this.logger = logger;
+    }
 
     @Transactional(Transactional.TxType.REQUIRED)
     public PublicKeyCredentialCreationOptions createServerOptions(String email) {
         var challenge = new DefaultChallenge();
-        LOGGER.info("Create Challenge(Base64Url Encoded)");
-        LOGGER.info(Base64UrlUtil.encodeToString(challenge.getValue()));
-        // create user
-        LOGGER.info("Create UserInfo");
-        var id = UUIDUtil.convertUUIDToBytes(UUID.randomUUID());
-        var user = new Users(email, id, challenge.getValue());
-        entityManager.persist(user);
-        // find user
-        var users = entityManager
-                .createNamedQuery("getUserByEmail", Users.class)
-                .setParameter("email", email)
-                .getResultList();
-        if (users.isEmpty()) {
-            throw new RuntimeException("Something bad!");
+        var user = entityManager.find(Users.class, email);
+        if (user == null) {
+            user = createNewUser(email, challenge);
+        } else {
+            throw new WebAuthnException("User is already exist.");
         }
         PublicKeyCredentialUserEntity userInfo = new PublicKeyCredentialUserEntity(
-                users.get(0).id, // id
-                users.get(0).email, // username(email)
-                users.get(0).email // displayName
+                user.id, // id
+                user.email, // username(email)
+                user.email // displayName
         );
         var excludeCredentials = entityManager
                 .createNamedQuery("getCredentialById", Credential.class)
-                .setParameter("credentialId", users.get(0).credentialId)
+                .setParameter("credentialId", user.credentialId)
                 .getResultStream()
                 .map(credential -> new PublicKeyCredentialDescriptor(
                         PublicKeyCredentialType.PUBLIC_KEY,
@@ -101,7 +96,6 @@ public class WebAuthnService {
 
     @Transactional(Transactional.TxType.REQUIRED)
     public boolean creationFinish(String email, byte[] clientDataJSON, byte[] attestationObject) {
-        LOGGER.info("WebAuthnService.creationFinish()");
         var origin = Origin.create("http://localhost:4200");
         var challenges = entityManager.createNamedQuery("getUserByEmail", Users.class)
                 .setParameter("email", email)
@@ -139,8 +133,6 @@ public class WebAuthnService {
                 registrationData.getAttestationObject().getAuthenticatorData().getSignCount()
         );
         var credentialId = registrationData.getAttestationObject().getAuthenticatorData().getAttestedCredentialData().getCredentialId();
-        LOGGER.info("credentialId");
-        LOGGER.info(Base64UrlUtil.encodeToString(credentialId));
         // store credential to user table
         persistCredential(email, credentialId);
         // store authenticator
@@ -177,7 +169,6 @@ public class WebAuthnService {
     }
 
     public boolean assertionFinish(byte[] credentialId, byte[] clientDataJSON, byte[] authenticatorData, byte[] signature, byte[] userHandle) {
-        LOGGER.info("WebAuthnService.creationFinish()");
         var origin = Origin.create("http://localhost:4200");
         var serverProperty = entityManager.createNamedQuery("getUserByCredentialId", Users.class)
                 .setParameter("credentialId", Base64UrlUtil.encodeToString(credentialId))
@@ -202,8 +193,14 @@ public class WebAuthnService {
         return true;
     }
 
+    private Users createNewUser(String email, Challenge challenge) {
+        var id = UUIDUtil.convertUUIDToBytes(UUID.randomUUID());
+        var user = new Users(email, id, challenge.getValue());
+        entityManager.persist(user);
+        return entityManager.find(Users.class, email);
+    }
+
     private void persistAuthenticator(byte[] credentialId, Authenticator authenticator) {
-        LOGGER.info("WebAuthnService.persistAuthenticator()");
         // serialize authenticator
         var objectConverter = new ObjectConverter();
         var attestedCredentialDataConverter = new AttestedCredentialDataConverter(objectConverter);
@@ -225,13 +222,8 @@ public class WebAuthnService {
     }
 
     private void persistCredential(String email, byte[] credentialId) {
-        LOGGER.info("start: WebAuthnService.persistCredential");
         var user = entityManager.find(Users.class, email);
         user.credentialId = Base64UrlUtil.encodeToString(credentialId);
-        LOGGER.info("user.credentialId");
-        LOGGER.info(user.credentialId);
-//        entityManager.persist(user);
-        LOGGER.info("end: WebAuthnService.persistCredential");
     }
 
     private AuthenticatorImpl getAuthenticator(byte[] credentialId) {
