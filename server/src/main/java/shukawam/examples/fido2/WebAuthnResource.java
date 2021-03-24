@@ -15,9 +15,8 @@ import java.util.stream.Collectors;
 @Logged
 @Debug
 public class WebAuthnResource {
-    private final WebAuthnService webAuthnService;
-
     private final Logger logger;
+    private final WebAuthnService webAuthnService;
 
     @Inject
     public WebAuthnResource(WebAuthnService webAuthnService, Logger logger) {
@@ -63,7 +62,7 @@ public class WebAuthnResource {
     @Path("assertion/options/{email}")
     @Produces(MediaType.APPLICATION_JSON)
     public AssertionServerOptions assertionOptions(@PathParam("email") String email) {
-        var publicKeyCredentialRequestOptions = webAuthnService.requestOptions(email);
+        var publicKeyCredentialRequestOptions = webAuthnService.requestServerOptions(email);
         var allowCredential = publicKeyCredentialRequestOptions.getAllowCredentials()
                 .stream()
                 .map(publicKeyCredentialDescriptor -> new MyPublicKeyCredentialDescriptor(

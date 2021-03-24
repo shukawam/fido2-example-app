@@ -1,5 +1,6 @@
 package shukawam.examples.fido2;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.webauthn4j.WebAuthnManager;
 import com.webauthn4j.authenticator.Authenticator;
 import com.webauthn4j.authenticator.AuthenticatorImpl;
@@ -128,14 +129,14 @@ public class WebAuthnService {
         var credentialId = registrationData.getAttestationObject().getAuthenticatorData().getAttestedCredentialData().getCredentialId();
         // store credential to user table
         user.credentialId = Base64UrlUtil.encodeToString(credentialId);
-//        entityManager.merge()
+        logger.info(user.credentialId);
         // store authenticator
         persistAuthenticator(credentialId, authenticator);
         return true;
     }
 
     @Transactional(Transactional.TxType.REQUIRED)
-    public PublicKeyCredentialRequestOptions requestOptions(String email) {
+    public PublicKeyCredentialRequestOptions requestServerOptions(String email) {
         var user = entityManager.find(Users.class, email);
         var challenge = new DefaultChallenge();
         user.challenge = challenge.getValue();
@@ -152,6 +153,9 @@ public class WebAuthnService {
                         )
                 )).collect(Collectors.toList());
         System.out.println(allowCredentials.isEmpty());
+        if (allowCredentials.isEmpty()) {
+            logger.info("Credential is empty.");
+        }
         return new PublicKeyCredentialRequestOptions(
                 challenge,
                 TimeUnit.SECONDS.toMillis(60),
