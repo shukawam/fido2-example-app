@@ -25,7 +25,6 @@ export class SignUpComponent implements OnInit {
   ngOnInit(): void {}
 
   async signUp(): Promise<void> {
-    console.log(this.user.email);
     const credential = await this.signUpService.createCredential(
       this.user.userHandle,
       this.user.email,
