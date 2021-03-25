@@ -1,16 +1,21 @@
-# fido2-example
+# OCHaCafe Season 4 - #1 生体認証のイロハ
 
-Sample implementation of FIDO2 server and client.
+[Helidon](https://helidon.io/)と[WebAuthn4J](https://webauthn4j.github.io/webauthn4j/ja/)を使った FIDO2 - Relying Party のサンプル実装．
 
-- server
-  - Java
-    - Helidon MP
-    - WebAuthn4J
-- client
+## 構成
+
+- front: WebAuthn を実行するクライアントのサンプル実装．
   - Angular
+- server: Relying Party のサンプル実装．
+  - Java
+    - Helidon MP: for REST API
+    - WebAuthn4J: Attestation, Assertion の検証ライブラリ
 
-## Build and execute
+## 実行
 
 ```bash
+cd <clone dir>
 docker-compose up -d
 ```
+
+[http://localhost](http://localhost)
