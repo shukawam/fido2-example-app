@@ -1,34 +1,39 @@
 package shukawam.examples.fido2.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
-@Entity(name = "Credential")
-@Table(name = "CREDENTIAL")
+@Entity(name = "Credentials")
+@Table(name = "CREDENTIALS")
 @Access(AccessType.FIELD)
 @NamedQueries({
-        @NamedQuery(name = "getCredentialById", query = "SELECT c FROM Credential c WHERE c.credentialId = :credentialId")
+        @NamedQuery(name = "getCredentialById", query = "SELECT c FROM Credentials c WHERE c.credentialId = :credentialId")
 })
-public class Credential {
+@Getter
+@Setter
+public class Credentials {
     @Id
     @Column(name = "CREDENTIAL_ID")
-    public String credentialId;
+    private String credentialId;
     @Column(name = "ATTESTED_CREDENTIAL_DATA")
-    public byte[] serializedAttestedCredentialData;
+    private byte[] serializedAttestedCredentialData;
     @Column(name = "ENVELOPE")
-    public byte[] serializedEnvelope;
+    private byte[] serializedEnvelope;
     @Column(name = "TRANSPORTS")
-    public String serializedTransports;
+    private String serializedTransports;
     @Column(name = "AUTHENTICATOR_EXTENSIONS")
-    public byte[] serializedAuthenticatorExtensions;
+    private byte[] serializedAuthenticatorExtensions;
     @Column(name = "CLIENT_EXTENSIONS")
-    public String serializedClientExtensions;
+    private String serializedClientExtensions;
     @Column(name = "COUNTER")
-    public long counter;
+    private long counter;
 
-    public Credential() {
+    public Credentials() {
     }
 
-    public Credential(String credentialId, byte[] serializedAttestedCredentialData, byte[] serializedEnvelope, String serializedTransports, byte[] serializedAuthenticatorExtensions, String serializedClientExtensions, long counter) {
+    public Credentials(String credentialId, byte[] serializedAttestedCredentialData, byte[] serializedEnvelope, String serializedTransports, byte[] serializedAuthenticatorExtensions, String serializedClientExtensions, long counter) {
         this.credentialId = credentialId;
         this.serializedAttestedCredentialData = serializedAttestedCredentialData;
         this.serializedEnvelope = serializedEnvelope;
