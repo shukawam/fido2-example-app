@@ -7,4 +7,4 @@ RUN npm run build --prod
 
 FROM nginx:latest
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build-stage /app/dist/idcs-demo-app /usr/share/nginx/html
+COPY --from=build-stage /app/dist/front /usr/share/nginx/html
