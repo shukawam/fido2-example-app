@@ -1,5 +1,8 @@
 package shukawam.examples.fido2.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 @Entity(name = "Users")
@@ -10,16 +13,18 @@ import javax.persistence.*;
         @NamedQuery(name = "getUserByEmail", query = "SELECT u FROM Users u WHERE u.email = :email"),
         @NamedQuery(name = "getUserByCredentialId", query = "SELECT u FROM Users u WHERE u.credentialId = :credentialId")
 })
+@Setter
+@Getter
 public class Users {
     @Id
     @Column(name = "EMAIL")
-    public String email;
+    private String email;
     @Column(name = "ID")
-    public byte[] id;
+    private byte[] id;
     @Column(name = "CHALLENGE")
-    public byte[] challenge;
+    private byte[] challenge;
     @Column(name = "CREDENTIAL_ID")
-    public String credentialId;
+    private String credentialId;
 
     public Users() {
     }
