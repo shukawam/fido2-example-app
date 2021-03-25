@@ -4,12 +4,45 @@ services:
   # Front
   front:
     build: ./front
-    container_name: front
+    container_name: webauthn-client
     ports:
       - 4200:80
+    networks: 
+      - fido-sample-network
   # Server
   fido2:
     build: ./server
-    container_name: rp
+    container_name: rp-server
     ports: 
       - 8081:8081
+    networks: 
+      - fido-sample-network
+  # Proxy
+  proxy:
+    build: ./nginx
+    container_name: reverse-proxy
+    ports: 
+      - 80:80
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - fido-sample-network
+  # Database
+  db:
+    image: mysql
+    container_name: mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      TZ: 'Asia/Tokyo'
+    networks:
+      - fido-sample-network
+
+networks:
+  fido-sample-network:
