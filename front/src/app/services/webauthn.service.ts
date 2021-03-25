@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
 import { AssertionResult } from '../interfaces/webauthn/assertion-result';
 import { AssertionServerOptions } from '../interfaces/webauthn/assertion-server-options';
 import { AttestationResult } from '../interfaces/webauthn/attestation-result';
@@ -13,10 +12,10 @@ import { Base64urlUtil } from '../utils/base64url';
   providedIn: 'root',
 })
 export class WebauthnService {
-  private ATTESTATION_OPTION = 'attestation/options';
-  private ATTESTATION_RESULT = 'attestation/result';
-  private ASSERTION_OPTION = 'assertion/options';
-  private ASSERTION_REQUEST = 'assertion/result';
+  private ATTESTATION_OPTION = '/webauthn/attestation/options';
+  private ATTESTATION_RESULT = '/webauthn/attestation/result';
+  private ASSERTION_OPTION = '/webauthn/assertion/options';
+  private ASSERTION_REQUEST = '/webauthn/assertion/result';
 
   constructor(private readonly httpClient: HttpClient) {}
 
@@ -41,14 +40,11 @@ export class WebauthnService {
     email: string
   ): Promise<PublicKeyCredentialCreationOptions> {
     return this.httpClient
-      .get<AttestationServerOptions>(
-        `${environment.rpUriBase}/${this.ATTESTATION_OPTION}/${email}`, // http://localhost:8081/webauthn/attestation/options/{email}
-        {
-          headers: {
-            'Content-type': 'application/json',
-          },
-        }
-      )
+      .get<AttestationServerOptions>(`${this.ATTESTATION_OPTION}/${email}`, {
+        headers: {
+          'Content-type': 'application/json',
+        },
+      })
       .toPromise()
       .then((serverOptions) => {
         console.log('serverOptions', serverOptions);
@@ -93,7 +89,7 @@ export class WebauthnService {
   ): Promise<AttestationResult> {
     return this.httpClient
       .post<AttestationResult>(
-        `${environment.rpUriBase}/${this.ATTESTATION_RESULT}`,
+        `${this.ATTESTATION_RESULT}`,
         {
           email: email,
           attestationObject: Base64urlUtil.arrayBufferToBase64url(
@@ -136,7 +132,7 @@ export class WebauthnService {
   ): Promise<AssertionResult> {
     return this.httpClient
       .post<AssertionResult>(
-        `${environment.rpUriBase}/${this.ASSERTION_REQUEST}`,
+        `${this.ASSERTION_REQUEST}`,
         {
           credentialId: Base64urlUtil.arrayBufferToBase64url(credentialId),
           clientDataJSON: Base64urlUtil.arrayBufferToBase64url(clientDataJSON),
@@ -158,9 +154,7 @@ export class WebauthnService {
   ): Promise<PublicKeyCredentialRequestOptions> {
     console.log(email);
     return this.httpClient
-      .get<AssertionServerOptions>(
-        `${environment.rpUriBase}/${this.ASSERTION_OPTION}/${email}`
-      )
+      .get<AssertionServerOptions>(`${this.ASSERTION_OPTION}/${email}`)
       .toPromise()
       .then((requestOptions) => {
         return {
