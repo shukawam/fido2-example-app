@@ -37,11 +37,22 @@ public class WebAuthnResource {
                         publicKeyCredentialCreationOptions.getUser().getDisplayName()
                 ),
                 Base64UrlUtil.encodeToString(publicKeyCredentialCreationOptions.getChallenge().getValue()),
-                publicKeyCredentialCreationOptions.getPubKeyCredParams(),
+                publicKeyCredentialCreationOptions.getPubKeyCredParams().stream().map(publicKeyCredentialParameters -> new MyPublicKeyCredentialParameters(
+                        publicKeyCredentialParameters.getType().getValue(),
+                        publicKeyCredentialParameters.getAlg().getValue()
+                )).collect(Collectors.toList()),
                 publicKeyCredentialCreationOptions.getTimeout(),
-                publicKeyCredentialCreationOptions.getExcludeCredentials(),
-                publicKeyCredentialCreationOptions.getAuthenticatorSelection(),
-                publicKeyCredentialCreationOptions.getAttestation(),
+                publicKeyCredentialCreationOptions.getExcludeCredentials().stream().map(publicKeyCredentialDescriptor -> new MyPublicKeyCredentialDescriptor(
+                        publicKeyCredentialDescriptor.getType().getValue(),
+                        Base64UrlUtil.encodeToString(publicKeyCredentialDescriptor.getId()),
+                        publicKeyCredentialDescriptor.getTransports()
+                )).collect(Collectors.toList()),
+                new MyAuthenticatorSelectionCriteria(
+                        publicKeyCredentialCreationOptions.getAuthenticatorSelection().getAuthenticatorAttachment().getValue(),
+                        publicKeyCredentialCreationOptions.getAuthenticatorSelection().isRequireResidentKey(),
+                        publicKeyCredentialCreationOptions.getAuthenticatorSelection().getUserVerification().getValue()
+                ),
+                publicKeyCredentialCreationOptions.getAttestation().getValue(),
                 publicKeyCredentialCreationOptions.getExtensions()
         );
     }
@@ -63,19 +74,18 @@ public class WebAuthnResource {
     @Produces(MediaType.APPLICATION_JSON)
     public AssertionServerOptions assertionOptions(@PathParam("email") String email) {
         var publicKeyCredentialRequestOptions = webAuthnService.requestServerOptions(email);
-        var allowCredential = publicKeyCredentialRequestOptions.getAllowCredentials()
-                .stream()
-                .map(publicKeyCredentialDescriptor -> new MyPublicKeyCredentialDescriptor(
-                        "public-key",
-                        Base64UrlUtil.encodeToString(publicKeyCredentialDescriptor.getId()),
-                        publicKeyCredentialDescriptor.getTransports())
-                ).collect(Collectors.toList());
         return new AssertionServerOptions(
                 Base64UrlUtil.encodeToString(publicKeyCredentialRequestOptions.getChallenge().getValue()),
                 publicKeyCredentialRequestOptions.getTimeout(),
                 publicKeyCredentialRequestOptions.getRpId(),
-                allowCredential,
-                publicKeyCredentialRequestOptions.getUserVerification(),
+                publicKeyCredentialRequestOptions.getAllowCredentials()
+                        .stream()
+                        .map(publicKeyCredentialDescriptor -> new MyPublicKeyCredentialDescriptor(
+                                publicKeyCredentialDescriptor.getType().getValue(),
+                                Base64UrlUtil.encodeToString(publicKeyCredentialDescriptor.getId()),
+                                publicKeyCredentialDescriptor.getTransports())
+                        ).collect(Collectors.toList()),
+                publicKeyCredentialRequestOptions.getUserVerification().getValue(),
                 publicKeyCredentialRequestOptions.getExtensions()
         );
     }

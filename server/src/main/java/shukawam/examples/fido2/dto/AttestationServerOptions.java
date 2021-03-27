@@ -12,15 +12,15 @@ public class AttestationServerOptions {
     public PublicKeyCredentialRpEntity rp;
     public MyPublicKeyCredentialUserEntity user;
     public String challenge;
-    public List<PublicKeyCredentialParameters> pubKeyCredParams;
+    public List<MyPublicKeyCredentialParameters> pubKeyCredParams;
     public Long timeout;
-    public List<PublicKeyCredentialDescriptor> excludeCredentials;
-    public AuthenticatorSelectionCriteria authenticatorSelection;
-    public AttestationConveyancePreference attestation;
+    public List<MyPublicKeyCredentialDescriptor> excludeCredentials;
+    public MyAuthenticatorSelectionCriteria authenticatorSelection;
+    public String attestation;
     public AuthenticationExtensionsClientInputs<RegistrationExtensionClientInput> extensions;
 
     @JsonCreator
-    public AttestationServerOptions(@JsonProperty("rp") PublicKeyCredentialRpEntity rp, @JsonProperty("user") MyPublicKeyCredentialUserEntity user, @JsonProperty("challenge") String challenge, @JsonProperty("pubKeyCredParams") List<PublicKeyCredentialParameters> pubKeyCredParams, @JsonProperty("timeout") Long timeout, @JsonProperty("excludeCredentials") List<PublicKeyCredentialDescriptor> excludeCredentials, @JsonProperty("authenticatorSelection") AuthenticatorSelectionCriteria authenticatorSelection, @JsonProperty("attestation") AttestationConveyancePreference attestation, @JsonProperty("extensions") AuthenticationExtensionsClientInputs<RegistrationExtensionClientInput> extensions) {
+    public AttestationServerOptions(@JsonProperty("rp") PublicKeyCredentialRpEntity rp, @JsonProperty("user") MyPublicKeyCredentialUserEntity user, @JsonProperty("challenge") String challenge, @JsonProperty("pubKeyCredParams") List<MyPublicKeyCredentialParameters> pubKeyCredParams, @JsonProperty("timeout") Long timeout, @JsonProperty("excludeCredentials") List<MyPublicKeyCredentialDescriptor> excludeCredentials, @JsonProperty("authenticatorSelection") MyAuthenticatorSelectionCriteria authenticatorSelection, @JsonProperty("attestation") String attestation, @JsonProperty("extensions") AuthenticationExtensionsClientInputs<RegistrationExtensionClientInput> extensions) {
         this.rp = rp;
         this.user = user;
         this.challenge = challenge;

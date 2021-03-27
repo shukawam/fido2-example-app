@@ -147,8 +147,14 @@ public class WebAuthnService {
         var authenticationRequest = new AuthenticationRequest(credentialId, userHandle, authenticatorData, clientDataJSON, signature);
         var authenticationParameter = new AuthenticationParameters(serverProperty, getAuthenticator(credentialId), false);
         try {
+            WebAuthnManager.createNonStrictWebAuthnManager().parse(authenticationRequest);
+        } catch (DataConversionException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        try {
             WebAuthnManager.createNonStrictWebAuthnManager().validate(authenticationRequest, authenticationParameter);
-        } catch (DataConversionException | ValidationException e) {
+        } catch (ValidationException e) {
             e.printStackTrace();
             throw e;
         }
@@ -163,11 +169,21 @@ public class WebAuthnService {
     }
 
     private PublicKeyCredentialCreationOptions publicKeyCredentialCreationOptions(Users user, Challenge challenge) {
+        // Require
         var userInfo = new PublicKeyCredentialUserEntity(
                 user.getId(), // id
                 user.getEmail(), // username(email)
                 user.getEmail() // displayName
         );
+        var pubKeyCredParams = Arrays.asList(
+                new PublicKeyCredentialParameters(
+                        PublicKeyCredentialType.PUBLIC_KEY,
+                        COSEAlgorithmIdentifier.ES256),
+                new PublicKeyCredentialParameters(
+                        PublicKeyCredentialType.PUBLIC_KEY,
+                        COSEAlgorithmIdentifier.RS256)
+        );
+        // Optionally
         var excludeCredentials = entityManager
                 .createNamedQuery("getCredentialById", Credentials.class)
                 .setParameter("credentialId", user.getCredentialId())
@@ -177,14 +193,6 @@ public class WebAuthnService {
                         Base64UrlUtil.decode(credential.getCredentialId()),
                         Collections.emptySet())
                 ).collect(Collectors.toList());
-        var pubKeyCredParams = Arrays.asList(
-                new PublicKeyCredentialParameters(
-                        PublicKeyCredentialType.PUBLIC_KEY,
-                        COSEAlgorithmIdentifier.ES256),
-                new PublicKeyCredentialParameters(
-                        PublicKeyCredentialType.PUBLIC_KEY,
-                        COSEAlgorithmIdentifier.RS256)
-        );
         var authenticatorSelectionCriteria = new AuthenticatorSelectionCriteria(
                 AuthenticatorAttachment.CROSS_PLATFORM,
                 false,
@@ -194,7 +202,12 @@ public class WebAuthnService {
                 rp,
                 userInfo,
                 challenge,
-                pubKeyCredParams
+                pubKeyCredParams,
+                TimeUnit.SECONDS.toMillis(6000),
+                excludeCredentials,
+                authenticatorSelectionCriteria,
+                AttestationConveyancePreference.DIRECT,
+                null
         );
         return publicKeyCredentialCreationOptions;
     }

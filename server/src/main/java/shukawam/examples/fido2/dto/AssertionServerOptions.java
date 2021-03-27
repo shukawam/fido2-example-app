@@ -13,13 +13,13 @@ public class AssertionServerOptions implements Serializable {
     public Long timeout;
     public String rpId;
     public List<MyPublicKeyCredentialDescriptor> allowCredentials;
-    public UserVerificationRequirement userVerification;
+    public String userVerification;
     public AuthenticationExtensionsClientInputs<AuthenticationExtensionClientInput> extensions;
 
     public AssertionServerOptions() {
     }
 
-    public AssertionServerOptions(String challenge, Long timeout, String rpId, List<MyPublicKeyCredentialDescriptor> allowCredentials, UserVerificationRequirement userVerification, AuthenticationExtensionsClientInputs<AuthenticationExtensionClientInput> extensions) {
+    public AssertionServerOptions(String challenge, Long timeout, String rpId, List<MyPublicKeyCredentialDescriptor> allowCredentials, String userVerification, AuthenticationExtensionsClientInputs<AuthenticationExtensionClientInput> extensions) {
         this.challenge = challenge;
         this.timeout = timeout;
         this.rpId = rpId;
