@@ -9,10 +9,7 @@ export class SignInService {
   constructor(private readonly webAuthnService: WebauthnService) {}
 
   public async requestCredential(email: string): Promise<Credential | null> {
-    const credential = await this.webAuthnService.requestCredential(email, {
-      // If you want to determine the specification on the client side, write the options here.
-      userVerification: 'preferred',
-    });
+    const credential = await this.webAuthnService.requestCredential(email);
     console.log('Credential', credential);
     return credential;
   }

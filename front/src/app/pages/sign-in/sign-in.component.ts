@@ -26,14 +26,14 @@ export class SignInComponent implements OnInit {
     const credential = await this.signInService.requestCredential(
       this.user.email
     );
-    let publicKeyCredential: PublicKeyCredential = credential as PublicKeyCredential;
-    let assertionResponse: AuthenticatorAssertionResponse = publicKeyCredential.response as AuthenticatorAssertionResponse;
-    let credentialId = publicKeyCredential.rawId;
-    let clientDataJSON = assertionResponse.clientDataJSON;
-    let authenticatorData = assertionResponse.authenticatorData;
-    let signature = assertionResponse.signature;
-    let userHandle = assertionResponse.userHandle;
-    let clientExtensions = publicKeyCredential.getClientExtensionResults();
+    const publicKeyCredential: PublicKeyCredential = credential as PublicKeyCredential;
+    const assertionResponse: AuthenticatorAssertionResponse = publicKeyCredential.response as AuthenticatorAssertionResponse;
+    const credentialId = publicKeyCredential.rawId;
+    const clientDataJSON = assertionResponse.clientDataJSON;
+    const authenticatorData = assertionResponse.authenticatorData;
+    const signature = assertionResponse.signature;
+    const userHandle = assertionResponse.userHandle;
+    const clientExtensions = publicKeyCredential.getClientExtensionResults();
     const result = await this.signInService.checkCredential(
       credentialId,
       clientDataJSON,

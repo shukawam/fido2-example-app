@@ -19,17 +19,10 @@ export class WebauthnService {
 
   constructor(private readonly httpClient: HttpClient) {}
 
-  public async createCredential(
-    email: string,
-    publicKeyCredentialCreationOptions: WebAuthn4NgCredentialCreationOptions
-  ): Promise<Credential | null> {
+  public async createCredential(email: string): Promise<Credential | null> {
     return this.fetchAttestationOptions(email).then((fetchOptions) => {
-      let mergeOptions = {
-        ...fetchOptions,
-        ...publicKeyCredentialCreationOptions,
-      };
       let credentialCreationOptions: CredentialCreationOptions = {
-        publicKey: mergeOptions,
+        publicKey: fetchOptions,
       };
       console.log('credentialCreationOption', credentialCreationOptions);
       return navigator.credentials.create(credentialCreationOptions);
@@ -49,7 +42,7 @@ export class WebauthnService {
       .then((serverOptions) => {
         console.log('serverOptions', serverOptions);
         return {
-          // require
+          // Require
           rp: serverOptions.rp,
           user: {
             id: Base64urlUtil.base64urlToArrayBuffer(serverOptions.user.id),
@@ -59,13 +52,8 @@ export class WebauthnService {
           challenge: Base64urlUtil.base64urlToArrayBuffer(
             serverOptions.challenge
           ),
-          pubKeyCredParams: [
-            {
-              alg: -7,
-              type: 'public-key',
-            },
-          ],
-          // option
+          pubKeyCredParams: serverOptions.pubKeyCredParams,
+          // Optionally
           timeout: serverOptions.timeout,
           excludeCredentials: serverOptions.excludeCredentials.map(
             (credential) => {
@@ -106,17 +94,10 @@ export class WebauthnService {
       .toPromise();
   }
 
-  public async requestCredential(
-    email: string,
-    publicKeyCredentialRequestOptions: WebAuthn4NgCredentialRequestOptions
-  ): Promise<Credential | null> {
+  public async requestCredential(email: string): Promise<Credential | null> {
     return this.fetchAssertionOptions(email).then((fetchedOptions) => {
-      let mergedOptions = {
-        ...fetchedOptions,
-        ...publicKeyCredentialRequestOptions,
-      };
-      let credentialRequestOptions: CredentialRequestOptions = {
-        publicKey: mergedOptions,
+      const credentialRequestOptions: CredentialRequestOptions = {
+        publicKey: fetchedOptions,
       };
       console.log('credentialRequestOptions', credentialRequestOptions);
       return navigator.credentials.get(credentialRequestOptions);
@@ -168,7 +149,7 @@ export class WebauthnService {
           allowCredentials: requestOptions.allowCredentials?.map(
             (allowCredential) => {
               return {
-                type: 'public-key',
+                type: allowCredential.type,
                 id: Base64urlUtil.base64urlToArrayBuffer(allowCredential.id),
                 transports: allowCredential.transports,
               };

@@ -14,19 +14,7 @@ export class SignUpService {
     email: string,
     displayName: string
   ): Promise<Credential | null> {
-    // let excludeCredentials: PublicKeyCredentialDescriptor[] = credentialIds.map(
-    //   (credentialId) => {
-    //     // noinspection UnnecessaryLocalVariableJS
-    //     let credential: PublicKeyCredentialDescriptor = {
-    //       type: 'public-key',
-    //       id: credentialId,
-    //     };
-    //     return credential;
-    //   }
-    // );
-    const credential = await this.webAuthnService.createCredential(email, {
-      attestation: 'direct',
-    });
+    const credential = await this.webAuthnService.createCredential(email);
     console.log('credential', credential);
     return credential;
   }
