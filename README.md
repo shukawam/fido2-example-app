@@ -1,4 +1,4 @@
-# OCHaCafe Season 4 - #1 生体認証のイロハ
+# fido2-example
 
 [Helidon](https://helidon.io/)と[WebAuthn4J](https://webauthn4j.github.io/webauthn4j/ja/)を使った FIDO2 - Relying Party のサンプル実装．
 
