@@ -1,8 +1,8 @@
-# fido2-example
+# fido2-example-app
 
-[Helidon](https://helidon.io/)と[WebAuthn4J](https://webauthn4j.github.io/webauthn4j/ja/)を使った FIDO2 - Relying Party のサンプル実装．
+[Helidon](https://helidon.io/)と[WebAuthn4J](https://webauthn4j.github.io/webauthn4j/ja/)を使った FIDO2 - Relying Party のサンプルアプリケーションです．
 
-## 構成
+## 全体構成
 
 - front: WebAuthn を実行するクライアントのサンプル実装．
   - Angular
@@ -14,8 +14,8 @@
 ## 実行
 
 ```bash
-cd <clone dir>
-docker-compose up -d
+# ./fido2-sample-app
+docker compose up -d
 ```
 
-[http://localhost](http://localhost)
+[http://localhost](http://localhost) にブラウザからアクセスすると確認できます．
