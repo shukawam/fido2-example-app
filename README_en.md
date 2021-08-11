@@ -6,7 +6,7 @@ Sample application of FIDO2 that using [Helidon](https://helidon.io/#/)(for REST
 
 - front: Sample implementation of WebAuthn client.
   - Angular
-- server: Sample implementation of FIDO2-RP
+- rp-server: Sample implementation of FIDO2-RP
   - Java
     - Helidon MP: for REST API
     - WebAuthn4J: for Attestation and Assertion validation library
@@ -17,4 +17,5 @@ Sample application of FIDO2 that using [Helidon](https://helidon.io/#/)(for REST
 # ./fido2-example-app
 docker compose up -d
 ```
+
 and access [http://localhost](http://localhost).
