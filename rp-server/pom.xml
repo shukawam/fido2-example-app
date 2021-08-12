@@ -11,9 +11,9 @@
         <relativePath/>
     </parent>
     <groupId>shukawam.examples</groupId>
-    <artifactId>server</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <name>server</name>
+    <artifactId>rp-server</artifactId>
+    <version>0.0.1</version>
+    <name>rp-server</name>
 
     <properties>
         <webauthn4j.version>0.14.1.RELEASE</webauthn4j.version>
