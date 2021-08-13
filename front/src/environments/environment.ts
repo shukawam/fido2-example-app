@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  rpUriBase: 'http://localhost:8081/webauthn',
+  rpUriBase: 'http://localhost:8080/webauthn',
 };
 
 /*

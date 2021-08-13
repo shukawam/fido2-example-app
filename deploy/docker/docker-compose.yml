@@ -3,18 +3,18 @@ version: '3.3'
 services:
   # Front
   front:
-    build: ./front
+    image: shukawam/webauthn-client:0.0.1
     container_name: webauthn-client
     ports:
       - 4200:80
     networks: 
       - fido-sample-network
   # Server
-  fido2:
-    build: ./server
+  rp-server:
+    image: shukawam/rp-server:0.0.1
     container_name: rp-server
     ports: 
-      - 8081:8081
+      - 8080:8080
     networks: 
       - fido-sample-network
   # Proxy
@@ -34,7 +34,7 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./db/:/docker-entrypoint-initdb.d
+      - ./database/:/docker-entrypoint-initdb.d
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: test

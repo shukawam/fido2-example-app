@@ -37,9 +37,9 @@ FROM openjdk:11-jre-slim
 WORKDIR /helidon
 
 # Copy the binary built in the 1st stage
-COPY --from=build /helidon/target/server.jar ./
+COPY --from=build /helidon/target/rp-server.jar ./
 COPY --from=build /helidon/target/libs ./libs
 
-CMD ["java", "-jar", "server.jar"]
+CMD ["java", "-jar", "rp-server.jar"]
 
 EXPOSE 8080
