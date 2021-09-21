@@ -6,7 +6,7 @@
 
 - front: WebAuthn を実行するクライアントのサンプル実装．
   - Angular
-- rp-server: Relying Party のサンプル実装．
+- rp-server: WebAuthn - Relying Party のサンプル実装．
   - Java
     - Helidon MP: for REST API
     - WebAuthn4J: Attestation, Assertion の検証ライブラリ
