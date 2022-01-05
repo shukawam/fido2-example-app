@@ -1,21 +1,21 @@
 # fido2-example-app
 
-[Helidon](https://helidon.io/) と [WebAuthn4J](https://webauthn4j.github.io/webauthn4j/ja/) を使った FIDO2 - Relying Party のサンプルアプリケーションです．
+Sample application of FIDO2 that using [Helidon](https://helidon.io/#/)(for REST API) and [WebAuthn4J](https://github.com/webauthn4j)(for Attestation and Assertion validation).
 
-## 全体構成
+## Overall composition
 
-- front: WebAuthn を実行するクライアントのサンプル実装．
+- front: Sample implementation of WebAuthn client.
   - Angular
-- rp-server: WebAuthn - Relying Party のサンプル実装．
+- rp-server: Sample implementation of FIDO2-RP
   - Java
     - Helidon MP: for REST API
-    - WebAuthn4J: Attestation, Assertion の検証ライブラリ
+    - WebAuthn4J: for Attestation and Assertion validation library
 
-## 実行
+## Build and Run
 
 ```bash
-# ./fido2-sample-app
+# ./fido2-example-app
 docker compose up -d
 ```
 
-[http://localhost](http://localhost) にブラウザからアクセスすると確認できます．
+and access [http://localhost](http://localhost).
